@@ -1,0 +1,86 @@
+name: Release Helm Chart
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - main
+
+env:
+  REGISTRY: ghcr.io
+  CHART_NAME: proxysql
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Configure Git
+      run: |
+        git config user.name "$GITHUB_ACTOR"
+        git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+    - name: Install Helm
+      uses: azure/setup-helm@v4
+      with:
+        version: v3.14.0
+
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Package Helm Chart
+      run: |
+        helm package . --destination ./charts
+
+    - name: Push Helm Chart to GHCR
+      run: |
+        CHART_VERSION=$(helm show chart . | grep '^version:' | awk '{print $2}')
+        CHART_PACKAGE="${{ env.CHART_NAME }}-${CHART_VERSION}.tgz"
+        
+        if [ -f "./charts/${CHART_PACKAGE}" ]; then
+          echo "Pushing ${CHART_PACKAGE} to ${{ env.REGISTRY }}/${{ github.repository_owner }}/${CHART_NAME}:${CHART_VERSION}"
+          helm push "./charts/${CHART_PACKAGE}" oci://${{ env.REGISTRY }}/${{ github.repository_owner }}
+        else
+          echo "Chart package not found: ./charts/${CHART_PACKAGE}"
+          ls -la ./charts/
+          exit 1
+        fi
+
+    - name: Update Chart Repository Index (on main branch)
+      if: github.ref == 'refs/heads/main'
+      run: |
+        # Create charts directory for index
+        mkdir -p gh-pages
+        
+        # Copy packaged charts
+        cp charts/*.tgz gh-pages/ 2>/dev/null || true
+        
+        # Generate index.yaml
+        helm repo index gh-pages --url https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
+        
+        echo "Generated index.yaml:"
+        cat gh-pages/index.yaml
+
+    - name: Deploy to GitHub Pages (on main branch)
+      if: github.ref == 'refs/heads/main'
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./gh-pages
+        enable_jekyll: false

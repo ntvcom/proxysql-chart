@@ -4,6 +4,14 @@ A proxysql Helm chart for Kubernetes. Offers option to expose web interface thro
 
 ## TL;DR;
 
+### Using OCI Registry (Recommended)
+
+```console
+helm install my-release oci://ghcr.io/ntvcom/proxysql --version 2.0.2
+```
+
+### Using Traditional Helm Repository
+
 ```console
 helm repo add christianhuth https://charts.christianhuth.de
 helm repo update
@@ -21,6 +29,14 @@ This chart bootstraps a [ProxySQL](https://github.com/sysown/proxysql) deploymen
 ## Installing the Chart
 
 To install the chart with the release name `my-release`:
+
+### Using OCI Registry (Recommended)
+
+```console
+helm install my-release oci://ghcr.io/ntvcom/proxysql --version 2.0.2
+```
+
+### Using Traditional Helm Repository
 
 ```console
 helm repo add christianhuth https://charts.christianhuth.de
@@ -122,4 +138,22 @@ Alternatively, a YAML file that specifies the values for the parameters can be p
 
 ```console
 helm install my-release -f values.yaml christianhuth/proxysql
+```
+
+## Using the Chart from GitHub Container Registry
+
+This chart is also available as an OCI artifact in GitHub Container Registry (GHCR). You can install it directly without adding a repository:
+
+```console
+# Install the latest version
+helm install my-release oci://ghcr.io/ntvcom/proxysql
+
+# Install a specific version
+helm install my-release oci://ghcr.io/ntvcom/proxysql --version 2.0.2
+
+# List available versions
+helm show chart oci://ghcr.io/ntvcom/proxysql
+
+# Pull chart locally for inspection
+helm pull oci://ghcr.io/ntvcom/proxysql --version 2.0.2
 ```
