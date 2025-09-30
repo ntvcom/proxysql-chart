@@ -50,10 +50,18 @@ spec:
       readinessProbe:
         tcpSocket:
           port: proxysql
+      lifecycle:
+        preStop:
+          exec:
+            command: ["/bin/sh", "-c", "/usr/local/bin/wait_queries_to_finish.sh"]
       volumeMounts:
         - name: proxysql-config
           mountPath: /etc/proxysql.cnf
           subPath: proxysql.cnf
+          readOnly: true
+        - name: proxysql-scripts
+          mountPath: /usr/local/bin/wait_queries_to_finish.sh
+          subPath: wait_queries_to_finish.sh
           readOnly: true
       {{- if and .Values.proxysql.cluster.enabled .Values.proxysql.cluster.claim.enabled }}
         - name: {{ include "proxysql.fullname" . }}-pv
@@ -61,10 +69,18 @@ spec:
       {{- end }}
       resources:
         {{- toYaml .Values.resources | nindent 8 }}
+  terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds | default 300 }}
   volumes:
     - name: proxysql-config
       configMap:
         name: {{ .Values.proxysql.configmap | default (include "proxysql.fullname" .) }}
+    - name: proxysql-scripts
+      configMap:
+        name: {{ include "proxysql.fullname" . }}-scripts
+        items:
+        - key: "wait_queries_to_finish.sh"
+          path: "wait_queries_to_finish.sh"
+          mode: 0777
   {{- with .Values.nodeSelector }}
   nodeSelector:
     {{- toYaml . | nindent 4 }}

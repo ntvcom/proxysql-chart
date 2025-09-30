@@ -1,3 +1,28 @@
+---
+{{- if .Values.metrics.enabled -}}
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  labels:
+    {{- include "proxysql.labels" . | nindent 4 }}
+    {{- if .Values.metrics.additionalLabels }}
+    {{- toYaml .Values.metrics.additionalLabels | nindent 4 }}
+    {{- end }}
+  name: {{ include "proxysql.fullname" . }}
+spec:
+  podMetricsEndpoints:
+  - port: metrics
+    path: /metrics
+    interval: 30s
+    scrapeTimeout: 10s
+  namespaceSelector:
+    matchNames:
+    - {{ .Release.Namespace }}
+  selector:
+    matchLabels:
+      {{- include "proxysql.selectorLabels" . | nindent 6 }}
+{{- end }}
+---
 {{- if and .Values.metrics.enabled .Values.metrics.serviceMonitor.enabled -}}
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
