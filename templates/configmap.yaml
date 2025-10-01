@@ -3,6 +3,11 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ include "proxysql.fullname" . }}
+  labels:
+    {{- include "proxysql.labels" . | nindent 4 }}
+    {{- if .Values.metrics.additionalLabels }}
+    {{- toYaml .Values.metrics.additionalLabels | nindent 4 }}
+    {{- end }}
 data:
   proxysql.cnf: |
     admin_variables=

@@ -30,31 +30,3 @@ spec:
   {{- end }}
 {{- end }}
 {{- end }}
-
-
-spec:
-  scaleTargetRef:
-    name: proxysql
-    kind: Deployment
-  pollingInterval: 30
-  cooldownPeriod: 300
-  minReplicaCount: 3
-  maxReplicaCount: 50
-  triggers:
-  - type: cpu
-    metricType: Utilization
-    metadata:
-      type: Utilization
-      value: "70"
-  advanced:
-    horizontalPodAutoscalerConfig:
-      behavior:
-        scaleDown:
-          stabilizationWindowSeconds: 300
-          policies:
-            - type: Percent
-              value: 20
-              periodSeconds: 15
-            - type: Pods
-              value: 2
-              periodSeconds: 30

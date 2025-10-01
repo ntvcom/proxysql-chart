@@ -5,6 +5,8 @@ metadata:
   name: {{ include "proxysql.fullname" . }}
   labels:
     {{- include "proxysql.labels" . | nindent 4 }}
+  annotations:
+    checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }} 
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
