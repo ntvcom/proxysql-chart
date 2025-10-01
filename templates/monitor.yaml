@@ -15,9 +15,6 @@ spec:
     path: /metrics
     interval: 30s
     scrapeTimeout: 10s
-  namespaceSelector:
-    matchNames:
-    - {{ .Release.Namespace }}
   selector:
     matchLabels:
       {{- include "proxysql.selectorLabels" . | nindent 6 }}
@@ -38,9 +35,6 @@ spec:
     - interval: 30s
       port: metrics
   jobLabel: ""
-  namespaceSelector:
-    matchNames:
-    - {{ .Release.Namespace }}
   selector:
     matchLabels:
       {{- include "proxysql.selectorLabels" . | nindent 6 }}
