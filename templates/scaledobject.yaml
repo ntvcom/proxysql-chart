@@ -19,14 +19,14 @@ spec:
       metricType: Utilization
       metadata:
         type: Utilization
-        value: {{ .Values.autoscaling.targetCPUUtilizationPercentage }}
+        value: {{ .Values.autoscaling.targetCPUUtilizationPercentage | quote }}
   {{- end }}
   {{- if .Values.autoscaling.targetMemoryUtilizationPercentage }}
     - type: memory
       metricType: Utilization
       metadata:
         type: Utilization
-        value: {{ .Values.autoscaling.targetMemoryUtilizationPercentage }}
+        value: {{ .Values.autoscaling.targetMemoryUtilizationPercentage | quote }}
   {{- end }}
 {{- end }}
 {{- end }}
