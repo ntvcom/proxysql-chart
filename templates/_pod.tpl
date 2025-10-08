@@ -1,7 +1,8 @@
 {{- define "proxysql.pod" -}}
 metadata:
-{{- with .Values.podAnnotations }}
   annotations:
+    checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }} 
+{{- with .Values.podAnnotations }}
     {{- toYaml . | nindent 4 }}
 {{- end }}
   labels:
