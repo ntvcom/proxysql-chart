@@ -28,12 +28,12 @@ data:
     mysql_variables=
     {
       interfaces="0.0.0.0:{{ .Values.proxysql.mysql.port }}"
-      connect_timeout_server={{ .Values.proxysql.mysql.connectTimeoutServer | default 1500 }
-      connect_timeout_server_max={{ .Values.proxysql.mysql.connectTimeoutServerMax | default 10000 }
+      connect_timeout_server={{ .Values.proxysql.mysql.connectTimeoutServer | default 1500 }}
+      connect_timeout_server_max={{ .Values.proxysql.mysql.connectTimeoutServerMax | default 10000 }}
       connection_max_age_ms={{ .Values.proxysql.mysql.connectionMaxAgeMS }}
-      default_max_latency_ms={{ .Values.proxysql.mysql.defaultMaxLatencyMs | default 1500 }
+      default_max_latency_ms={{ .Values.proxysql.mysql.defaultMaxLatencyMs | default 1500 }}
       default_query_timeout={{ .Values.proxysql.mysql.defaultQueryTimeout | default 86400000 }}
-      long_query_time={{ .Values.proxysql.mysql.longQueryTime | default 5000 }
+      long_query_time={{ .Values.proxysql.mysql.longQueryTime | default 5000 }}
       max_allowed_packet={{ .Values.proxysql.mysql.maxAllowedPacket | default 1073741824 }}
       max_connections={{ .Values.proxysql.mysql.maxConnections }}
       ping_timeout_server={{ .Values.proxysql.mysql.pingTimeoutServer | default 500 }}
